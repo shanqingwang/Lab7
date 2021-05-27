@@ -1,32 +1,51 @@
 // script.js
 
 import { router } from './router.js'; // Router imported so you can use it to manipulate your SPA app here
-const setState = router.setState;
-var entries;
+
+const header = document.querySelector('header > h1');
+const settings = document.querySelector('header > img');
 
 // Make sure you register your service worker here too
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   fetch('https://cse110lab6.herokuapp.com/entries')
     .then(response => response.json())
     .then(entries => {
-      let i = 1;
-      entries.forEach(entry => {
+      entries.forEach((entry, i) => {
         let newPost = document.createElement('journal-entry');
         newPost.entry = entry;
-        newPost.num = i;
-        i += 1;
-        console.log(newPost, newPost.num);
+ 
+        newPost.addEventListener("click", () =>{
+          router.setState("single-entry", false, i+1, newPost.entry);
+        });
         document.querySelector('main').appendChild(newPost);
+        
       });
-    });
-    entries = document.querySelectorAll('journal-entry');
-    console.log(entries);
-
-    entries.forEach(el => el.addEventListener('click', () => {
-      console.log("clicked")
-    }));
-
+    })
 });
 
- 
+header.addEventListener('click', () =>{
+  router.setState('homepage', false);
+});
+
+settings.addEventListener('click', ()=>{
+  router.setState('settings', false)
+});
+
+window.addEventListener('popstate', event => {
+  router.setState(event.state, true);
+});
+
+
