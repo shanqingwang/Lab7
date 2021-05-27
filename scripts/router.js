@@ -1,11 +1,14 @@
 // router.js
-
 export const router = {};
+
+const header = document.querySelector("header > h1");
+const body = document.body;
+let cur_entry = document.querySelector("entry-page");
 
 /**
  * Changes the "page" (state) that your SPA app is currently set to
  */
-router.setState = function(state) {
+router.setState = function(state, back, entry_i, entry) {
   /**
    * - There are three states that your SPA app will have
    *    1. The home page
@@ -35,20 +38,51 @@ router.setState = function(state) {
    *    1. You may add as many helper functions in this file as you like
    *    2. You may modify the parameters of setState() as much as you like
    */
-  // var main = document.querySelector('main');
-  // if(state == "setttings"){
-  //   main.classList.add("settings");
-  // } else if (state == "single-entry") {
-  //   main.classList.add("single-entry");
-  // } else { // go back to main
-  //   if (main.classList.contains('settings')){
-  //     main.classList.remove('settings');
+  if(state == "settings"){
+    body.classList.remove("single-entry");
+    body.classList.add("settings");
+    header.innerHTML = "Settings";
+    if(!back){
+      history.pushState(state,"settings",'#settings')
+    }
+  } else if (state == "single-entry") {
+    body.classList.remove("settings");
+    body.classList.add("single-entry");
+    header.innerHTML= `Entry ${entry_i}`;
+    // update cur_entry
+    let new_entry = document.createElement("entry-page");
+    new_entry.entry = entry;
+    
+    body.removeChild(cur_entry);
+    body.appendChild(new_entry);
+    cur_entry = new_entry;
+    console.log(cur_entry);
+    //body.removeChild(cur;_entry[0]);
+    if(!back){
+      history.pushState(state,"single-entry", `#entry${entry_i}`);
+    }
+  } else { // go back to main
+    if (body.classList.contains("settings")){
+      body.classList.remove("settings");
+    }
+    if (body.classList.contains("single-entry")){
+      body.classList.remove("single-entry");
+    }
+    header.innerHTML = "Journal Entries";
+    if(!back){
+      history.pushState(state,"home",'/')
+    }
+``}
+  // change history if necessary
+  // if(window.location.hash != `#${state}` && !back) {
+  //   if(state == "settings"){
+  //     history.pushState({ page: "settings"}, "", "./#settings");
+  //   } else if(state == "single-entry") {
+  //     history.pushState({ page: `entry${entry_i}`}, "", `./#entry${entry_i}`);
+  //   } else { //main
+  //     history.pushState({}, '', './');
   //   }
-  //   if (main.classList.contains('single-entry')){
-  //     main.classList.remove('single-entry');
-  //   }
+
   // }
-  
-  //history.pushState()
 
 }
